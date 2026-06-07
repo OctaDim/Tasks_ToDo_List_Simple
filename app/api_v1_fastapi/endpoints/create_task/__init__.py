@@ -1,1 +1,1 @@
-"""Create task endpoint."""
+"""Create task endpoint"""

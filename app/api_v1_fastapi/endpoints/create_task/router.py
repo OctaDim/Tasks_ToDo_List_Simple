@@ -6,15 +6,15 @@ from app.constants.constants import ErrorMessages
 from app.api_v1_fastapi.endpoints.create_task.in_schema import InCreateTask
 from app.api_v1_fastapi.endpoints.create_task.out_schema import OutCreateTask
 from app.db_postgres.session import get_async_session
-from app.repositories_utils.tasks import create_task_by_user
-from app.repositories_utils.users import get_user_by_id
+from app.repositories_utils.tasks_utils import create_task_by_user
+from app.repositories_utils.users_utils import get_user_by_id
 from app.schemas_common.errors import OutErrorResponse
 
 create_task_router = APIRouter(tags=["all_endpoints, tasks"])
 
 
 @create_task_router.post(
-    path="/users/{user_id}/tasks",
+    path="/tasks/create_task/{user_id}/",
     response_model=OutCreateTask,
     status_code=status.HTTP_201_CREATED,
     responses={
@@ -41,5 +41,5 @@ async def create_task_endpoint(
         title=create_task_data.title.strip(),
         description=create_task_data.description)
 
-    validated_instance = OutCreateTask.model_validate(task_obj)
-    return validated_instance
+    validated_inst = OutCreateTask.model_validate(task_obj)
+    return validated_inst
