@@ -27,7 +27,7 @@ async def get_user_endpoint(
 ) -> OutGetUser:
     user_obj = await get_user_by_id(session=session, user_id=user_id)
     if not user_obj:
-        error_log = ("Not found user [ERROR]: "
+        error_log = (f"{ErrorMessages.USER_NOT_FOUND}: "
                      f"user_id: {user_id}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=error_log)

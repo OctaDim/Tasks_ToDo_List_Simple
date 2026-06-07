@@ -10,7 +10,7 @@ from app.repositories_utils.tasks_utils import create_task_by_user
 from app.repositories_utils.users_utils import get_user_by_id
 from app.schemas_common.errors import OutErrorResponse
 
-create_task_router = APIRouter(tags=["all_endpoints, tasks"])
+create_task_router = APIRouter(tags=["all_endpoints", "tasks"])
 
 
 @create_task_router.post(
@@ -33,7 +33,7 @@ async def create_task_endpoint(
 
     if not user_obj:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="User not found")
+                            detail=ErrorMessages.USER_NOT_FOUND)
 
     task_obj = await create_task_by_user(
         session=session,
