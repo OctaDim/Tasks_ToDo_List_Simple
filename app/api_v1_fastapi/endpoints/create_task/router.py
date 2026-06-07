@@ -14,7 +14,7 @@ create_task_router = APIRouter(tags=["all_endpoints, tasks"])
 
 
 @create_task_router.post(
-    path="/tasks/create_task/{user_id}/",
+    path="/users/{user_id}/tasks",
     response_model=OutCreateTask,
     status_code=status.HTTP_201_CREATED,
     responses={
