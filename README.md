@@ -10,11 +10,42 @@ FastAPI backend service for user and task management. The project implements the
 - `app/models_sqlalchemy/` defines SQLAlchemy models for `users` and `tasks`.
 - `app/db_postgres/` contains the async SQLAlchemy engine and session dependency.
 - `alembic/` stores database migration configuration and revisions.
-- `_tests/` mirrors the application structure and contains API, config, repository, and DB tests.
+- `_tests_basic/` contains the isolated basic API checks.
+- `_tests_extra/` contains the extended API, config, repository, DB, and Docker contract tests.
+
+## API - SERVICES - REPOSITORIES
+
+The project follows a lightweight layered structure:
+
+- API layer: accepts HTTP requests, validates request/response schemas, maps errors to HTTP status codes, and orchestrates use-case calls.
+- Service layer: holds reusable business-adjacent helpers that are shared across endpoints.
+- Repository layer: isolates data access and SQLAlchemy persistence operations.
+
+Modules by layer:
+
+- API layer:
+  `app/app_main.py`, `app/main.py`, `app/api_v1_fastapi/router.py`, `app/api_v1_fastapi/endpoints/*`, `app/api_v1_fastapi/schemas_common/*`
+- Service layer:
+  `app/services_utils/body_validation.py`
+- Repository layer:
+  `app/repositories_utils/users_utils.py`, `app/repositories_utils/tasks_utils.py`
+
+Supporting infrastructure modules:
+
+- Database and ORM:
+  `app/db_postgres/*`, `app/models_sqlalchemy/*`
+- Configuration and constants:
+  `app/core/*`, `app/constants/*`
+
+Why this split exists:
+
+- API modules stay focused on HTTP contracts instead of raw persistence details.
+- Repository modules centralize data access so SQLAlchemy queries are not duplicated across routers.
+- Service helpers keep shared validation logic reusable without pushing it into every endpoint module.
 
 ## Technology Stack
 
-- Python 3.11+
+- Python 3.11+ (Recommended 3.14)
 - FastAPI
 - Pydantic v2
 - SQLAlchemy 2.x with async sessions
@@ -530,9 +561,6 @@ Error responses:
 - Duplicate user email returns HTTP `409`.
 - Task statuses are limited to `new`, `in_progress`, `done`, and `cancelled`.
 
-## Related Documentation
-
-- `PROJECT_ARCHITECTURE.md` for the detailed repository map, ADRs, and operational notes
-- `project_requirements.md` for the original assignment and acceptance constraints
+## Related Subjects
 - `alembic/` for DB migrations
 - `_tests/` for executable API contract coverage
