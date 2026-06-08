@@ -8,6 +8,7 @@ from app.api_v1_fastapi.endpoints.update_task_status.out_schema import (
     OutUpdateTaskStatus)
 from app.constants.constants import ErrorMessages
 from app.db_postgres.session import get_async_session
+from app.models_sqlalchemy.task_model import TaskStatusEnum
 from app.repositories_utils.tasks_utils import (
     get_task_by_id, update_task_status)
 from app.schemas_common.errors import OutErrorResponse
@@ -30,6 +31,11 @@ async def update_task_status_endpoint(
         update_task_data: InUpdateTaskStatus,
         session: AsyncSession = Depends(get_async_session),
 ) -> OutUpdateTaskStatus:
+    status_upd_value = update_task_data.status
+    if not TaskStatusEnum.has_value(status_upd_value):
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                            detail=ErrorMessages.STATUS_NOT_FOUND)
+
     task_obj = await get_task_by_id(session=session, task_id=task_id)
 
     if not task_obj:
