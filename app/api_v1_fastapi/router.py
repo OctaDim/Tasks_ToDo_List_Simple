@@ -1,0 +1,18 @@
+from fastapi import APIRouter
+
+from app.api_v1_fastapi.endpoints.create_task.router import create_task_router
+from app.api_v1_fastapi.endpoints.create_user.router import create_user_router
+from app.api_v1_fastapi.endpoints.delete_task.router import delete_task_router
+from app.api_v1_fastapi.endpoints.get_user.router import get_user_router as get_user_router
+from app.api_v1_fastapi.endpoints.list_user_tasks.router import list_user_tasks_router
+from app.api_v1_fastapi.endpoints.update_task_status.router import update_task_status_router
+from app.api_v1_fastapi.endpoints.user_task_stats.router import user_task_stats_router
+
+fast_api_router = APIRouter()
+fast_api_router.include_router(create_user_router)
+fast_api_router.include_router(get_user_router)
+fast_api_router.include_router(create_task_router)
+fast_api_router.include_router(list_user_tasks_router)
+fast_api_router.include_router(update_task_status_router)
+fast_api_router.include_router(delete_task_router)
+fast_api_router.include_router(user_task_stats_router)
