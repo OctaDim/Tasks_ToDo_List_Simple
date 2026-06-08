@@ -1,6 +1,6 @@
-from typing import List
+from typing import List, Dict
 
-from sqlalchemy import select, Sequence
+from sqlalchemy import select, Sequence, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models_sqlalchemy.task_model import TaskModel, TaskStatusEnum
@@ -38,9 +38,9 @@ async def list_tasks_by_user(
     if status:
         stmt = stmt.where(TaskModel.status == status)
 
-    stmt_result = await session.execute(stmt)
-    stmt_result = stmt_result.scalars().all()
-    return stmt_result
+    executed_stmt = await session.execute(stmt)
+    user_tasks = executed_stmt.scalars().all()
+    return user_tasks
 
 
 async def get_task_by_id(
@@ -72,3 +72,20 @@ async def delete_task_by_id(
     await session.delete(task_obj)
     await session.commit()
     return True
+
+
+async def get_user_tasks_stats(
+        session: AsyncSession,
+        user_id: int
+) -> Dict[str, int]:
+    stmt = select(
+        TaskModel.status, func.count(TaskModel.id)
+    ).where(
+        TaskModel.user_id == user_id
+    ).group_by(TaskModel.status)
+
+    executed_stmt = await session.execute(stmt)
+    stmt_result = executed_stmt.tuples().all()
+
+    user_statuses_counts = dict(stmt_result)
+    return user_statuses_counts

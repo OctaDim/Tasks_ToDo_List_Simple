@@ -6,7 +6,7 @@ from app.api_v1_fastapi.endpoints.user_task_stats.out_schema import (
     OutUserTaskStats)
 from app.constants.constants import ErrorMessages
 from app.db_postgres.session import get_async_session
-from app.repositories_utils.tasks_utils import get_user_task_statuses
+from app.repositories_utils.tasks_utils import get_user_tasks_stats
 from app.repositories_utils.users_utils import get_user_by_id
 from app.schemas_common.errors import OutErrorResponse
 
@@ -32,7 +32,7 @@ async def user_task_stats_endpoint(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=ErrorMessages.USER_NOT_FOUND)
 
-    statuses_result = await get_user_task_statuses(session=session,
-                                                   user_id=user_id)
+    statuses_result = await get_user_tasks_stats(session=session,
+                                                 user_id=user_id)
     validated_resp_inst = OutUserTaskStats(**statuses_result)
     return validated_resp_inst
