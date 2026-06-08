@@ -112,6 +112,65 @@ Start the project first, then open:
 - ReDoc: `http://127.0.0.1:8000/redoc`
 - OpenAPI JSON: `http://127.0.0.1:8000/openapi.json`
 
+## How To Run BASIC Tests
+
+Run only the basic tests from `_tests_basic`:
+
+```bash
+python -m pytest -q _tests_basic
+```
+
+If this repository uses the local verified virtual environment:
+
+```bash
+.venv3145/bin/python -m pytest -q _tests_basic
+```
+
+Run the basic tests separately from `_tests_extra/app`:
+
+```bash
+python -m pytest -q _tests_basic --ignore=_tests_extra/app
+```
+
+`_tests_basic` is now self-contained and does not depend on `_tests` or `_tests_extra`.
+
+List of tests:
+
+- Create user (valid parameters)
+- Create user (invalid parameters)
+- Create user (missing parameters)
+- Create user (empty parameters)
+- Create user (duplicate email)
+- Create task (valid parameters)
+- Create task (invalid parameters)
+- Create task (missing parameters)
+- Create task (empty parameters)
+- Create task (nonexistent user)
+- List user tasks (valid parameters)
+- List user tasks (invalid parameters)
+- List user tasks (missing parameters)
+- List user tasks (empty parameters)
+- List user tasks (nonexistent user)
+- Filter tasks by status (valid status)
+- Filter tasks by status (nonexistent status)
+- Filter tasks by status (missing status)
+- Filter tasks by status (empty status)
+- Update task status (valid parameters)
+- Update task status (invalid parameters)
+- Update task status (missing parameters)
+- Update task status (empty parameters)
+- Update task status (nonexistent task)
+- Delete task (valid parameters)
+- Delete task (invalid parameters)
+- Delete task (missing parameters)
+- Delete task (empty parameters)
+- Delete task (nonexistent task)
+- Get statistics (valid parameters)
+- Get statistics (invalid parameters)
+- Get statistics (missing parameters)
+- Get statistics (empty parameters)
+- Get statistics (nonexistent user)
+
 ## How To Run Tests
 
 Run the full test suite from the repository root:
