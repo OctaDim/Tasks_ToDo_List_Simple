@@ -6,7 +6,7 @@ from app.api_v1_fastapi.endpoints.get_user.out_schema import OutGetUser
 from app.constants.constants import ErrorMessages
 from app.db_postgres.session import get_async_session
 from app.repositories_utils.users_utils import get_user_by_id
-from app.schemas_common.errors import OutErrorResponse
+from app.api_v1_fastapi.schemas_common.errors_out_schemas import OutErrorResponse
 
 get_user_router = APIRouter(tags=["all_endpoints", "users"])
 

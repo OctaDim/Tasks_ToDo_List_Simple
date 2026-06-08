@@ -11,7 +11,7 @@ from app.db_postgres.session import get_async_session
 from app.models_sqlalchemy.task_model import TaskStatusEnum
 from app.repositories_utils.tasks_utils import (
     get_task_by_id, update_task_status)
-from app.schemas_common.errors import OutErrorResponse
+from app.api_v1_fastapi.schemas_common.errors_out_schemas import OutErrorResponse
 
 update_task_status_router = APIRouter(tags=["all_endpoints", "tasks"])
 

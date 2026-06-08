@@ -8,7 +8,7 @@ from app.api_v1_fastapi.endpoints.create_task.out_schema import OutCreateTask
 from app.db_postgres.session import get_async_session
 from app.repositories_utils.tasks_utils import create_task_by_user
 from app.repositories_utils.users_utils import get_user_by_id
-from app.schemas_common.errors import OutErrorResponse
+from app.api_v1_fastapi.schemas_common.errors_out_schemas import OutErrorResponse
 
 create_task_router = APIRouter(tags=["all_endpoints", "tasks"])
 

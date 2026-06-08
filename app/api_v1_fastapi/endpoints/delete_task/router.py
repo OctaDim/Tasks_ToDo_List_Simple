@@ -7,7 +7,7 @@ from app.api_v1_fastapi.endpoints.delete_task.out_schema import (
 from app.constants.constants import ErrorMessages
 from app.db_postgres.session import get_async_session
 from app.repositories_utils.tasks_utils import delete_task_by_id
-from app.schemas_common.errors import OutErrorResponse
+from app.api_v1_fastapi.schemas_common.errors_out_schemas import OutErrorResponse
 
 delete_task_router = APIRouter(tags=["all_endpoints", "tasks"])
 

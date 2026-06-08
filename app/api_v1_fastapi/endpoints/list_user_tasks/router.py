@@ -12,7 +12,7 @@ from app.constants.constants import ErrorMessages
 from app.db_postgres.session import get_async_session
 from app.repositories_utils.tasks_utils import list_tasks_by_user
 from app.repositories_utils.users_utils import get_user_by_id
-from app.schemas_common.errors import OutErrorResponse
+from app.api_v1_fastapi.schemas_common.errors_out_schemas import OutErrorResponse
 
 list_user_tasks_router = APIRouter(tags=["all_endpoints", "users"])
 
