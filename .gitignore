@@ -18,7 +18,7 @@ env/
 
 # Local environment and secrets
 .env
-.env.*
+docker_compose/.env.postgres
 !.env.example
 *.pem
 *.key
@@ -43,3 +43,4 @@ Thumbs.db
 
 *Test/
 *BackUp/
+.env*
