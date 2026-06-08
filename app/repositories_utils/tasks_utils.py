@@ -60,3 +60,15 @@ async def update_task_status(
     await session.commit()
     await session.refresh(task_obj)
     return task_obj
+
+
+async def delete_task_by_id(
+        session: AsyncSession,
+        task_id: int
+) -> bool:
+    task_obj = await get_task_by_id(session=session, task_id=task_id)
+    if not task_obj:
+        return False
+    await session.delete(task_obj)
+    await session.commit()
+    return True
