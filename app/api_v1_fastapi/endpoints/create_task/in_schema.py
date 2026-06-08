@@ -11,7 +11,7 @@ class InCreateTask(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def validate_request_body(cls, data: dict | any) -> Dict[str, Any]:
+    def validate_request_body(cls, data: dict | Any) -> Dict[str, Any]:
         req_body_dict = ensure_req_body_dict(request_data=data)
         validate_not_blank(request_data=req_body_dict,
                            required_fields=("title",))
