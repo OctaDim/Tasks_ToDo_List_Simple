@@ -31,5 +31,5 @@ async def create_user_endpoint(
                                  email=str(create_user_data.email),
                                  name=create_user_data.name.strip())
 
-    validated_inst = OutCreateUser.model_validate(user_obj)
-    return validated_inst
+    validated_resp_inst = OutCreateUser.model_validate(user_obj)
+    return validated_resp_inst

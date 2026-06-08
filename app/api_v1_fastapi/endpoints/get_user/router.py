@@ -32,5 +32,5 @@ async def get_user_endpoint(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=error_log)
 
-    validated_inst = OutGetUser.model_validate(user_obj)
-    return validated_inst
+    validated_resp_inst = OutGetUser.model_validate(user_obj)
+    return validated_resp_inst

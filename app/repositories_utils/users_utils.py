@@ -19,5 +19,5 @@ async def get_user_by_id(
         session: AsyncSession,
         user_id: int
 ) -> UserModel | None:
-    user = await session.get(UserModel, user_id)
-    return user
+    user_obj = await session.get(UserModel, user_id)
+    return user_obj

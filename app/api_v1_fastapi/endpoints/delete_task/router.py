@@ -33,5 +33,5 @@ async def delete_task_endpoint(
                      f"task id: {task_id}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=error_log)
-    validated_response = OutDeleteTask(ok=True)
-    return validated_response
+    validated_resp_inst = OutDeleteTask(ok=True)
+    return validated_resp_inst

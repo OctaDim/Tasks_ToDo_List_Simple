@@ -47,5 +47,5 @@ async def update_task_status_endpoint(
         task_obj=task_obj,
         task_status=update_task_data.status)
 
-    validated_response = OutUpdateTaskStatus.model_validate(updated_task_obj)
-    return validated_response
+    validated_inst = OutUpdateTaskStatus.model_validate(updated_task_obj)
+    return validated_inst

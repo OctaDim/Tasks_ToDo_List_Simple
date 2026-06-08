@@ -45,5 +45,5 @@ async def list_user_tasks_endpoint(
                                           offset=query_params.offset)
 
     validated_tasks = [OutUserTask.model_validate(tsk) for tsk in tasks_objs]
-    validated_resp = OutUserTasksList(tasks=validated_tasks)
-    return validated_resp
+    validated_resp_inst = OutUserTasksList(tasks=validated_tasks)
+    return validated_resp_inst

@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models_sqlalchemy.base_model import Base
 
 
-class TaskStatus(StrEnum):
+class TaskStatusEnum(StrEnum):
     NEW = "new"
     IN_PROGRESS = "in_progress"
     DONE = "done"
@@ -34,10 +34,10 @@ class TaskModel(Base):
         Text,
         nullable=True)
 
-    status: Mapped[TaskStatus] = mapped_column(
-        Enum(TaskStatus, name="task_status"),
+    status: Mapped[TaskStatusEnum] = mapped_column(
+        Enum(TaskStatusEnum, name="task_status"),
         nullable=False,
-        default=TaskStatus.NEW)
+        default=TaskStatusEnum.NEW)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
