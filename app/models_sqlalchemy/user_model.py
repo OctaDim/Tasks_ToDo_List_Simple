@@ -32,5 +32,4 @@ class UserModel(Base):
     tasks_by_user: Mapped[List["TaskModel"]] = relationship(
         argument="TaskModel",
         back_populates="user_by_task",
-        cascade="all"
-                "delete-orphan")
+        cascade="all, delete-orphan")
