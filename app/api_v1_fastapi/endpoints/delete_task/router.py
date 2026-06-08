@@ -13,7 +13,7 @@ delete_task_router = APIRouter(tags=["all_endpoints", "tasks"])
 
 
 @delete_task_router.delete(
-    path="tasks/{task_id}",
+    path="/tasks/{task_id}",
     response_model=OutDeleteTask,
     responses={
         status.HTTP_404_NOT_FOUND: {
