@@ -87,6 +87,11 @@ async def get_user_tasks_stats(
     executed_stmt = await session.execute(stmt)
     stmt_result = executed_stmt.tuples().all()
 
-    user_statuses_counts = {status.value: count for status, count in stmt_result}
+    all_statuses_enums = TaskStatusEnum.__members__.values()
+    user_statuses_counts = {status.value: 0 for status in all_statuses_enums}
+
+    statuses_stats = {status.value: count for status, count in stmt_result}
+    user_statuses_counts.update(statuses_stats)
+
     user_statuses_counts["total"] = sum(user_statuses_counts.values())
     return user_statuses_counts
