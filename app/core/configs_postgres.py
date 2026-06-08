@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class DBPostgresConfigs(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env.postgres",
+    model_config = SettingsConfigDict(env_file="docker_compose/.env.postgres",
                                       env_file_encoding="utf-8",
                                       extra="ignore")
 
@@ -21,7 +21,7 @@ class DBPostgresConfigs(BaseSettings):
     postgres_host: str = Field(default="127.0.0.1",
                                alias="POSTGRES_HOST")
 
-    postgres_port: int = Field(default=15432,
+    postgres_port: int = Field(default=15433,
                                alias="POSTGRES_PORT")
 
     @property
@@ -31,6 +31,10 @@ class DBPostgresConfigs(BaseSettings):
                            f"@{self.postgres_host}:{self.postgres_port}/"
                            f"{self.postgres_db_name}")
         return postgres_db_url
+
+    @property
+    def alembic_database_url(self) -> str:
+        return self.database_url.replace("%", "%%")
 
 
 @lru_cache  # App settings cache
