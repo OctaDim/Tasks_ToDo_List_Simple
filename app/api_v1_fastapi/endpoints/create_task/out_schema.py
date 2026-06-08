@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 
-from app.models_sqlalchemy.task import TaskStatus
+from app.models_sqlalchemy.task_model import TaskStatusEnum
 
 
 class OutCreateTask(BaseModel):
@@ -12,6 +12,6 @@ class OutCreateTask(BaseModel):
     user_id: int
     title: str
     description: str | None
-    status: TaskStatus
+    status: TaskStatusEnum
     created_at: datetime
     updated_at: datetime
