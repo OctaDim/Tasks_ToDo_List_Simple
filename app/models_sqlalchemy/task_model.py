@@ -13,9 +13,14 @@ class TaskStatusEnum(StrEnum):
     DONE = "done"
     CANCELLED = "cancelled"
 
+    @classmethod
+    def has_value(cls, value: object) -> bool:
+        enum_value = value.value if isinstance(value, cls) else value
+        return enum_value in {status.value for status in cls}
+
 
 class TaskModel(Base):
-    __tablename__ = "todo_tasks"
+    __tablename__ = "tasks"
 
     id: Mapped[int] = mapped_column(
         primary_key=True,
@@ -35,7 +40,11 @@ class TaskModel(Base):
         nullable=True)
 
     status: Mapped[TaskStatusEnum] = mapped_column(
-        Enum(TaskStatusEnum, name="task_status"),
+        Enum(
+            TaskStatusEnum,
+            name="task_status",
+            values_callable=lambda enum_class: [status.value for status in enum_class],
+        ),
         nullable=False,
         default=TaskStatusEnum.NEW)
 
