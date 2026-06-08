@@ -40,3 +40,6 @@ secrets/
 Thumbs.db
 *.swp
 *.swo
+
+*Test/
+*BackUp/
