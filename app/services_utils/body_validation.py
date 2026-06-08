@@ -1,4 +1,5 @@
-from typing import Any, Dict, Union, Tuple, List
+from collections.abc import Sequence
+from typing import Any, Dict
 
 
 def ensure_req_body_dict(
@@ -13,7 +14,7 @@ def ensure_req_body_dict(
 
 def validate_not_blank(
         request_data: Dict[str, Any],
-        required_fields: Union[Tuple[str, ...], List[str, ...]]
+        required_fields: Sequence[str]
 ) -> bool | None:
     invalid_fields = []
     for field_name in required_fields:
