@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
@@ -6,12 +8,12 @@ from app.api_v1_fastapi.endpoints.update_task_status.in_schema import (
     InUpdateTaskStatus)
 from app.api_v1_fastapi.endpoints.update_task_status.out_schema import (
     OutUpdateTaskStatus)
+from app.api_v1_fastapi.schemas_common.errors_out_schemas import OutErrorResponse
 from app.constants.constants import ErrorMessages
 from app.db_postgres.session import get_async_session
 from app.models_sqlalchemy.task_model import TaskStatusEnum
 from app.repositories_utils.tasks_utils import (
     get_task_by_id, update_task_status)
-from app.api_v1_fastapi.schemas_common.errors_out_schemas import OutErrorResponse
 
 update_task_status_router = APIRouter(tags=["all_endpoints", "tasks"])
 
@@ -29,7 +31,7 @@ update_task_status_router = APIRouter(tags=["all_endpoints", "tasks"])
 async def update_task_status_endpoint(
         task_id: int,
         update_task_data: InUpdateTaskStatus,
-        session: AsyncSession = Depends(get_async_session),
+        session: Annotated[AsyncSession, Depends(get_async_session)]
 ) -> OutUpdateTaskStatus:
     status_upd_value = update_task_data.status
     if not TaskStatusEnum.has_value(status_upd_value):

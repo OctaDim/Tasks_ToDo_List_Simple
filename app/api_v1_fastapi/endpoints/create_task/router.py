@@ -1,14 +1,19 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
+from app.api_v1_fastapi.endpoints.create_task.in_schema import (
+    InCreateTask)
+from app.api_v1_fastapi.endpoints.create_task.out_schema import (
+    OutCreateTask)
+from app.api_v1_fastapi.schemas_common.errors_out_schemas import (
+    OutErrorResponse)
 from app.constants.constants import ErrorMessages
-from app.api_v1_fastapi.endpoints.create_task.in_schema import InCreateTask
-from app.api_v1_fastapi.endpoints.create_task.out_schema import OutCreateTask
 from app.db_postgres.session import get_async_session
 from app.repositories_utils.tasks_utils import create_task_by_user
 from app.repositories_utils.users_utils import get_user_by_id
-from app.api_v1_fastapi.schemas_common.errors_out_schemas import OutErrorResponse
 
 create_task_router = APIRouter(tags=["all_endpoints", "tasks"])
 
@@ -27,7 +32,7 @@ create_task_router = APIRouter(tags=["all_endpoints", "tasks"])
 async def create_task_endpoint(
         user_id: int,
         create_task_data: InCreateTask,
-        session: AsyncSession = Depends(get_async_session),
+        session: Annotated[AsyncSession, Depends(get_async_session)]
 ) -> OutCreateTask:
     user_obj = await get_user_by_id(session=session, user_id=user_id)
 

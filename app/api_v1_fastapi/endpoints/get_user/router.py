@@ -1,12 +1,14 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from app.api_v1_fastapi.endpoints.get_user.out_schema import OutGetUser
+from app.api_v1_fastapi.schemas_common.errors_out_schemas import OutErrorResponse
 from app.constants.constants import ErrorMessages
 from app.db_postgres.session import get_async_session
 from app.repositories_utils.users_utils import get_user_by_id
-from app.api_v1_fastapi.schemas_common.errors_out_schemas import OutErrorResponse
 
 get_user_router = APIRouter(tags=["all_endpoints", "users"])
 
@@ -23,7 +25,7 @@ get_user_router = APIRouter(tags=["all_endpoints", "users"])
             "description": ErrorMessages.INVALID_QUERY_PARAMS}, }, )
 async def get_user_endpoint(
         user_id: int,
-        session: AsyncSession = Depends(get_async_session)
+        session: Annotated[AsyncSession, Depends(get_async_session)]
 ) -> OutGetUser:
     user_obj = await get_user_by_id(session=session, user_id=user_id)
     if not user_obj:

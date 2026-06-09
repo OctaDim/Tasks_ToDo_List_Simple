@@ -8,11 +8,11 @@ from app.api_v1_fastapi.endpoints.list_user_tasks.in_schema import (
     InListUserTasksQuery)
 from app.api_v1_fastapi.endpoints.list_user_tasks.out_schema import (
     OutUserTasksList, OutUserTask)
+from app.api_v1_fastapi.schemas_common.errors_out_schemas import OutErrorResponse
 from app.constants.constants import ErrorMessages
 from app.db_postgres.session import get_async_session
 from app.repositories_utils.tasks_utils import list_tasks_by_user
 from app.repositories_utils.users_utils import get_user_by_id
-from app.api_v1_fastapi.schemas_common.errors_out_schemas import OutErrorResponse
 
 list_user_tasks_router = APIRouter(tags=["all_endpoints", "users"])
 
@@ -30,7 +30,7 @@ list_user_tasks_router = APIRouter(tags=["all_endpoints", "users"])
 async def list_user_tasks_endpoint(
         user_id: int,
         query_params: Annotated[InListUserTasksQuery, Query()],
-        session: AsyncSession = Depends(get_async_session),
+        session: Annotated[AsyncSession, Depends(get_async_session)]
 ) -> OutUserTasksList:
     user_obj = await get_user_by_id(session=session, user_id=user_id)
 

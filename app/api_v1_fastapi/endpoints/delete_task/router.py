@@ -1,13 +1,15 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from app.api_v1_fastapi.endpoints.delete_task.out_schema import (
     OutDeleteTask)
+from app.api_v1_fastapi.schemas_common.errors_out_schemas import OutErrorResponse
 from app.constants.constants import ErrorMessages
 from app.db_postgres.session import get_async_session
 from app.repositories_utils.tasks_utils import delete_task_by_id
-from app.api_v1_fastapi.schemas_common.errors_out_schemas import OutErrorResponse
 
 delete_task_router = APIRouter(tags=["all_endpoints", "tasks"])
 
@@ -24,7 +26,7 @@ delete_task_router = APIRouter(tags=["all_endpoints", "tasks"])
             "description": ErrorMessages.INVALID_QUERY_PARAMS}, }, )
 async def delete_task_endpoint(
         task_id: int,
-        session: AsyncSession = Depends(get_async_session)
+        session: Annotated[AsyncSession, Depends(get_async_session)]
 ) -> OutDeleteTask:
     task_deleted = await delete_task_by_id(session=session,
                                            task_id=task_id)

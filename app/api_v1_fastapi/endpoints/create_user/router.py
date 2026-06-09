@@ -1,13 +1,15 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from app.api_v1_fastapi.endpoints.create_user.in_schema import InCreateUser
 from app.api_v1_fastapi.endpoints.create_user.out_schema import OutCreateUser
+from app.api_v1_fastapi.schemas_common.errors_out_schemas import OutErrorResponse
 from app.constants.constants import ErrorMessages
 from app.db_postgres.session import get_async_session
 from app.repositories_utils.users_utils import create_user
-from app.api_v1_fastapi.schemas_common.errors_out_schemas import OutErrorResponse
 
 create_user_router = APIRouter(tags=["all_endpoints", "users"])
 
@@ -25,7 +27,7 @@ create_user_router = APIRouter(tags=["all_endpoints", "users"])
             "description": ErrorMessages.INVALID_QUERY_PARAMS}, }, )
 async def create_user_endpoint(
         create_user_data: InCreateUser,
-        session: AsyncSession = Depends(get_async_session)
+        session: Annotated[AsyncSession, Depends(get_async_session)]
 ) -> OutCreateUser:
     user_obj = await create_user(session=session,
                                  email=str(create_user_data.email),
