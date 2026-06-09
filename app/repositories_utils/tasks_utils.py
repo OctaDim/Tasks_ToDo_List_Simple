@@ -1,6 +1,6 @@
-from typing import List, Dict
+from typing import Dict, Sequence
 
-from sqlalchemy import select, Sequence, func
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models_sqlalchemy.task_model import TaskModel, TaskStatusEnum
@@ -28,7 +28,7 @@ async def list_tasks_by_user(
         status: TaskStatusEnum | None,
         limit: int,
         offset: int,
-) -> List[TaskModel] | Sequence[TaskModel]:
+) -> Sequence[TaskModel]:
     stmt = select(
         TaskModel
     ).where(
