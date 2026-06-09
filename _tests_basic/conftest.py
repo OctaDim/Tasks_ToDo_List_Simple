@@ -21,10 +21,10 @@ class InMemoryStore:
         self.task_id_sequence = 1
 
     async def create_user(
-        self,
-        session: Any,
-        email: str,
-        name: str,
+            self,
+            session: Any,
+            email: str,
+            name: str,
     ) -> SimpleNamespace:
         if any(user.email == email for user in self.users.values()):
             raise IntegrityError(
@@ -46,11 +46,11 @@ class InMemoryStore:
         return self.users.get(user_id)
 
     async def create_task(
-        self,
-        session: Any,
-        user: SimpleNamespace,
-        title: str,
-        description: str | None,
+            self,
+            session: Any,
+            user: SimpleNamespace,
+            title: str,
+            description: str | None,
     ) -> SimpleNamespace:
         now = datetime.now(UTC)
         task = SimpleNamespace(
@@ -70,12 +70,12 @@ class InMemoryStore:
         return self.tasks.get(task_id)
 
     async def list_tasks(
-        self,
-        session: Any,
-        user_id: int,
-        status: TaskStatusEnum | None,
-        limit: int,
-        offset: int,
+            self,
+            session: Any,
+            user_id: int,
+            status: TaskStatusEnum | None,
+            limit: int,
+            offset: int,
     ) -> List[SimpleNamespace]:
         tasks = [task for task in self.tasks.values() if task.user_id == user_id]
         if status is not None:
@@ -83,10 +83,10 @@ class InMemoryStore:
         return sorted(tasks, key=lambda task: task.id)[offset: offset + limit]
 
     async def update_task_status(
-        self,
-        session: Any,
-        task_obj: SimpleNamespace,
-        task_status: TaskStatusEnum,
+            self,
+            session: Any,
+            task_obj: SimpleNamespace,
+            task_status: TaskStatusEnum,
     ) -> SimpleNamespace:
         task_obj.status = task_status
         task_obj.updated_at = datetime.now(UTC)
@@ -118,10 +118,12 @@ async def client(monkeypatch: pytest.MonkeyPatch) -> AsyncGenerator[AsyncClient,
     monkeypatch.setattr("app.api_v1_fastapi.endpoints.list_user_tasks.router.get_user_by_id", store.get_user_by_id)
     monkeypatch.setattr("app.api_v1_fastapi.endpoints.list_user_tasks.router.list_tasks_by_user", store.list_tasks)
     monkeypatch.setattr("app.api_v1_fastapi.endpoints.update_task_status.router.get_task_by_id", store.get_task_by_id)
-    monkeypatch.setattr("app.api_v1_fastapi.endpoints.update_task_status.router.update_task_status", store.update_task_status)
+    monkeypatch.setattr("app.api_v1_fastapi.endpoints.update_task_status.router.update_task_status",
+                        store.update_task_status)
     monkeypatch.setattr("app.api_v1_fastapi.endpoints.delete_task.router.delete_task_by_id", store.delete_task_by_id)
     monkeypatch.setattr("app.api_v1_fastapi.endpoints.user_task_stats.router.get_user_by_id", store.get_user_by_id)
-    monkeypatch.setattr("app.api_v1_fastapi.endpoints.user_task_stats.router.get_user_tasks_stats", store.get_user_task_stats)
+    monkeypatch.setattr("app.api_v1_fastapi.endpoints.user_task_stats.router.get_user_tasks_stats",
+                        store.get_user_task_stats)
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as test_client:

@@ -5,16 +5,15 @@ import time
 
 import httpx
 
-
 BASE_URL = os.getenv("LIVE_API_BASE_URL", "http://127.0.0.1:8000")
 
 
 def _request(
-    client: httpx.Client,
-    method: str,
-    path: str,
-    expected_status: int,
-    **kwargs,
+        client: httpx.Client,
+        method: str,
+        path: str,
+        expected_status: int,
+        **kwargs,
 ) -> dict:
     response = client.request(method=method, url=path, **kwargs)
     assert response.status_code == expected_status, response.text

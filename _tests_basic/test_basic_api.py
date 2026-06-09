@@ -3,9 +3,9 @@ from httpx import AsyncClient
 
 
 async def _create_user(
-    client: AsyncClient,
-    email: str = "basic-user@example.com",
-    name: str = "Basic User",
+        client: AsyncClient,
+        email: str = "basic-user@example.com",
+        name: str = "Basic User",
 ) -> dict:
     response = await client.post("/users", json={"email": email, "name": name})
     assert response.status_code == 201
@@ -13,10 +13,10 @@ async def _create_user(
 
 
 async def _create_task(
-    client: AsyncClient,
-    user_id: int,
-    title: str = "Basic task",
-    description: str | None = "Basic description",
+        client: AsyncClient,
+        user_id: int,
+        title: str = "Basic task",
+        description: str | None = "Basic description",
 ) -> dict:
     response = await client.post(
         f"/users/{user_id}/tasks",
@@ -36,11 +36,11 @@ async def _create_task(
     ],
 )
 async def test_basic_create_user_cases(
-    client: AsyncClient,
-    payload: dict,
-    expected_status: int,
-    expected_param: str | None,
-    message_fragment: str | None,
+        client: AsyncClient,
+        payload: dict,
+        expected_status: int,
+        expected_param: str | None,
+        message_fragment: str | None,
 ) -> None:
     response = await client.post("/users", json=payload)
 
@@ -79,12 +79,12 @@ async def test_basic_create_user_duplicate_email_returns_conflict(client: AsyncC
     ],
 )
 async def test_basic_create_task_cases(
-    client: AsyncClient,
-    user_id: str | int,
-    payload: dict,
-    expected_status: int,
-    expected_param: str | None,
-    message_fragment: str | None,
+        client: AsyncClient,
+        user_id: str | int,
+        payload: dict,
+        expected_status: int,
+        expected_param: str | None,
+        message_fragment: str | None,
 ) -> None:
     created_user = await _create_user(client, email="task-owner-basic@example.com", name="Task Owner Basic")
     resolved_user_id = created_user["id"] if user_id == "created" else user_id
@@ -119,11 +119,11 @@ async def test_basic_create_task_cases(
     ],
 )
 async def test_basic_list_user_tasks_cases(
-    client: AsyncClient,
-    user_id: str | int,
-    params: dict,
-    expected_status: int,
-    expected_param: str | None,
+        client: AsyncClient,
+        user_id: str | int,
+        params: dict,
+        expected_status: int,
+        expected_param: str | None,
 ) -> None:
     created_user = await _create_user(client, email="list-owner-basic@example.com", name="List Owner Basic")
     await _create_task(client, created_user["id"], title="First basic listed task")
@@ -155,11 +155,11 @@ async def test_basic_list_user_tasks_cases(
     ],
 )
 async def test_basic_filter_tasks_by_status_cases(
-    client: AsyncClient,
-    status_value: str | None,
-    expected_status: int,
-    expected_param: str | None,
-    expected_count: int | None,
+        client: AsyncClient,
+        status_value: str | None,
+        expected_status: int,
+        expected_param: str | None,
+        expected_count: int | None,
 ) -> None:
     user = await _create_user(client, email="filter-owner-basic@example.com", name="Filter Owner Basic")
     task_done = await _create_task(client, user["id"], title="Done basic task")
@@ -189,12 +189,12 @@ async def test_basic_filter_tasks_by_status_cases(
     ],
 )
 async def test_basic_update_task_status_cases(
-    client: AsyncClient,
-    task_id_factory: str,
-    payload: dict,
-    expected_status: int,
-    expected_param: str | None,
-    message_fragment: str | None,
+        client: AsyncClient,
+        task_id_factory: str,
+        payload: dict,
+        expected_status: int,
+        expected_param: str | None,
+        message_fragment: str | None,
 ) -> None:
     user = await _create_user(client, email="status-owner-basic@example.com", name="Status Owner Basic")
     task = await _create_task(client, user["id"], title="Status basic task")
@@ -228,12 +228,12 @@ async def test_basic_update_task_status_cases(
     ],
 )
 async def test_basic_delete_task_cases(
-    client: AsyncClient,
-    path: str,
-    prepare_task: bool,
-    expected_status: int,
-    expected_param: str | None,
-    expected_detail: str | None,
+        client: AsyncClient,
+        path: str,
+        prepare_task: bool,
+        expected_status: int,
+        expected_param: str | None,
+        expected_detail: str | None,
 ) -> None:
     task_id = 0
     if prepare_task:
@@ -267,13 +267,13 @@ async def test_basic_delete_task_cases(
     ],
 )
 async def test_basic_user_task_stats_cases(
-    client: AsyncClient,
-    path: str,
-    prepare_data: bool,
-    expected_status: int,
-    expected_param: str | None,
-    expected_total: int | None,
-    expected_detail: str | None,
+        client: AsyncClient,
+        path: str,
+        prepare_data: bool,
+        expected_status: int,
+        expected_param: str | None,
+        expected_total: int | None,
+        expected_detail: str | None,
 ) -> None:
     user_id = 0
     if prepare_data:

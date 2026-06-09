@@ -72,4 +72,3 @@ async def test_user_task_stats_returns_not_found_for_missing_user(client: AsyncC
 
     assert response.status_code == 404
     assert response.json()["detail"] == "UserModel not found error"
-
