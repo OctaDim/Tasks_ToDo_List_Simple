@@ -1,0 +1,19 @@
+Ruff often-commands reminder
+
+Check code:
+ruff check
+
+Auto-fix issues:
+ruff check --fix
+
+Check and watch files:
+ruff check --watch
+
+Format code:
+ruff format
+
+Check formatting (CI):
+ruff format --check
+
+Explain a rule:
+ruff rule <rule_code>
