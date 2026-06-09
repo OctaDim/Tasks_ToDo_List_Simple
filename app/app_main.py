@@ -66,11 +66,11 @@ def create_fastapi_app() -> FastAPI:
         description="Backend API service for users tasks managing")
     fastapi_app.include_router(fast_api_router)
     fastapi_app.add_exception_handler(
-        RequestValidationError,
-        request_validation_exception_handler)
+        exc_class_or_status_code=RequestValidationError,
+        handler=request_validation_exception_handler)
     fastapi_app.add_exception_handler(
-        IntegrityError,
-        integrity_error_exception_handler)
+        exc_class_or_status_code=IntegrityError,
+        handler=integrity_error_exception_handler)
     return fastapi_app
 
 
