@@ -45,7 +45,7 @@ Why this split exists:
 
 ## Technology Stack
 
-- Python 3.11+ (Recommended 3.14)
+- Python 3.11+ (Recommended 3.14.5)
 - FastAPI
 - Pydantic v2
 - SQLAlchemy 2.x with async sessions
@@ -57,6 +57,13 @@ Why this split exists:
 ## Environment Variables
 
 The application reads PostgreSQL settings from environment variables or `docker_compose/.env.postgres`. Uvicorn runtime settings are read from `docker_compose/.env.api_uvicorn`.
+
+Compose note:
+
+- the host-facing PostgreSQL address remains `127.0.0.1:15433`,
+- the PostgreSQL container listens on all interfaces inside the Docker network so the `api` container can reach it,
+- the `api` container overrides `POSTGRES_HOST` to `db` so inter-container traffic uses the Docker network instead of container-local loopback.
+- Docker Compose interpolates published host and port values from `docker_compose/.env.postgres` and `docker_compose/.env.api_uvicorn` when you pass both files with `--env-file`.
 
 ### Application variables
 
@@ -79,28 +86,40 @@ The application reads PostgreSQL settings from environment variables or `docker_
 
 | Variable | Required | Default | Description |
 | --- | --- | --- | --- |
-| `API_HOST` | No | `127.0.0.1` | Host used by Uvicorn inside the Docker runtime |
+| `API_PUBLISH_HOST` | No | `127.0.0.1` | Host loopback address published by Docker Compose on the machine running Docker |
+| `API_HOST` | No | `0.0.0.0` | Bind host used by Uvicorn inside the Docker runtime |
 | `API_PORT` | No | `8000` | Port used by Uvicorn inside the Docker runtime |
 
 ## How To Run The Project
 
 ### Option 1. Recommended: Docker Compose
 
-1. Adjust `docker_compose/.env.postgres` and `docker_compose/.env.api_uvicorn` if you want custom values.
-2. Start the stack:
+1. Start the TO-DO TASKS backend service:
 
 ```bash
-docker compose up --build
+docker compose --env-file docker_compose/.env.postgres --env-file docker_compose/.env.api_uvicorn up --build
 ```
+
+Options:
+Adjust `docker_compose/.env.postgres` and `docker_compose/.env.api_uvicorn` if you want custom settings.
+
+IMPORTANT NOTE:
+- the container log may print `Uvicorn running on http://0.0.0.0:8000`. It is normal;
+- `http://0.0.0.0:8000` is the internal bind address inside the container, not the browser URL;
+- open `http://127.0.0.1:8000`, `http://127.0.0.1:8000/docs`, or `http://127.0.0.1:8000/openapi.json` from the host browser.
 
 What happens:
 
 - PostgreSQL starts from `docker_compose/.env.postgres` and binds to `127.0.0.1:${POSTGRES_PORT}`.
 - The `api` container reads `docker_compose/.env.postgres` and `docker_compose/.env.api_uvicorn`.
+- Docker Compose publishes `${POSTGRES_HOST}:${POSTGRES_HOST_PORT}` for PostgreSQL and `${API_PUBLISH_HOST}:${API_PORT}` for the API on the host.
+- Docker Compose overrides `POSTGRES_HOST=db` for the `api` container so the app reaches PostgreSQL over the internal Docker network.
+- The `api` container installs all Python runtime and test dependencies from `requirements.txt` during the Docker build.
 - The `api` container runs Alembic migrations automatically before starting Uvicorn.
 - Uvicorn starts with `API_HOST` and `API_PORT` from `docker_compose/.env.api_uvicorn`.
+- The default `API_HOST=0.0.0.0` is intentional so the service is reachable from the host browser when running in Docker/WSL, while `API_PUBLISH_HOST=127.0.0.1` preserves the external localhost URL.
 
-Available URLs:
+Default URLs with the committed env files:
 
 - API base URL: `http://127.0.0.1:8000`
 - Swagger UI: `http://127.0.0.1:8000/docs`
@@ -132,7 +151,7 @@ alembic -c alembic/alembic.ini upgrade head
 set -a
 . ./docker_compose/.env.api_uvicorn
 set +a
-uvicorn app.main:app --host "${API_HOST:-127.0.0.1}" --port "${API_PORT:-8000}"
+uvicorn app.main:app --host "${API_HOST:-0.0.0.0}" --port "${API_PORT:-8000}"
 ```
 
 ## How To Run Swagger
@@ -144,6 +163,19 @@ Start the project first, then open:
 - OpenAPI JSON: `http://127.0.0.1:8000/openapi.json`
 
 ## How To Run BASIC Tests
+
+Recommended Docker-native run after `docker compose --env-file docker_compose/.env.postgres --env-file docker_compose/.env.api_uvicorn up --build`:
+
+Detailed tests logging:
+```bash
+docker compose exec -T api python -m pytest -vv -s --tb=long --showlocals _tests_basic
+```
+
+Brief test logging:
+```bash
+docker compose exec -T api python -m pytest -q _tests_basic
+```
+
 
 Run only the basic tests from `_tests_basic`:
 
@@ -165,8 +197,10 @@ python -m pytest -q _tests_basic --ignore=_tests_extra/app
 
 `_tests_basic` is now self-contained and does not depend on `_tests` or `_tests_extra`.
 
-List of tests:
 
+## List of BASIC tests:
+
+### Create user:
 - Create user (valid parameters)
 - Create user (invalid parameters)
 - Create user (missing parameters)
@@ -177,32 +211,51 @@ List of tests:
 - Create task (missing parameters)
 - Create task (empty parameters)
 - Create task (nonexistent user)
+
+### List user tasks:
 - List user tasks (valid parameters)
 - List user tasks (invalid parameters)
 - List user tasks (missing parameters)
 - List user tasks (empty parameters)
 - List user tasks (nonexistent user)
+
+### Filter tasks by user:
 - Filter tasks by status (valid status)
 - Filter tasks by status (nonexistent status)
 - Filter tasks by status (missing status)
 - Filter tasks by status (empty status)
+
+### Update task status:
 - Update task status (valid parameters)
 - Update task status (invalid parameters)
 - Update task status (missing parameters)
 - Update task status (empty parameters)
 - Update task status (nonexistent task)
+
+### Delete task:
 - Delete task (valid parameters)
 - Delete task (invalid parameters)
 - Delete task (missing parameters)
 - Delete task (empty parameters)
 - Delete task (nonexistent task)
+
+### Get user tasks statuses statistics:
 - Get statistics (valid parameters)
 - Get statistics (invalid parameters)
 - Get statistics (missing parameters)
 - Get statistics (empty parameters)
 - Get statistics (nonexistent user)
 
-## How To Run Tests
+## How To Run EXTRA Tests (How to run BASIC tests see the section above)
+
+Recommended Docker-native runs after `docker compose --env-file docker_compose/.env.postgres --env-file docker_compose/.env.api_uvicorn up --build`:
+
+```bash
+docker compose exec -T api python -m pytest -q
+docker compose exec -T api python -m pytest -q _tests_extra/app/api/test_live_docker_api.py
+docker compose exec -T api python -m pytest -q _tests_extra/app/api
+docker compose exec -T api python -m pytest -q _tests_extra/docker_compose
+```
 
 Run the full test suite from the repository root:
 
