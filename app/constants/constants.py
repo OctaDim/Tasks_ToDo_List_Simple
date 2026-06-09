@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass(frozen=True)
 class ErrorMessages:
     INVALID_QUERY_PARAMS: str = "Query params validation error"
