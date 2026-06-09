@@ -1,0 +1,59 @@
+[tool.ruff]
+target-version = "py311"  # Minimum supported Python version
+line-length = 88  # Max line length
+
+exclude = [# Dirs and files to exclude
+    ".git",
+    ".venv",
+    ".venv3145",
+    "__pycache__",
+    "build",
+    "dist",
+    "_docs",
+]
+
+src = ["AI_Tasks_ToDo_List_Simple",
+]
+
+
+
+[tool.ruff.lint]
+select = [# Rules to check
+    "E", # Pycodestyle errors
+    "F", # Pyflakes errors  (unused imports, variables)
+    "I", # Isort import sorting errors
+    "UP", # Pyupgrade advises to upgrade to newer Python versions
+    "B", # Flake8-bugbear logical errors
+    "C4", # Improvements to list and iterrators
+    "W", # Trailing whitespaces at the end of the lines
+    "N", # Pep8-naming for correct variables and classes naming
+    "SIM", # Flake8-simplify more simple and readable code constructions
+    "RUF", # Ruff own rules often repeating other plugins rules
+]
+
+ignore = [# Rules to ignore
+    "E501", # Ignore max length
+    "COM812", # Ignore extra trailing comma
+    "UP006", # Ignore Dict typing annotation instead of dict annotation for back compatibility
+    "UP035", # Ignore List typing annotation instead of list annotation for back compatibility
+]
+
+unfixable = [
+    "ALL", # Skip all errors
+    "B018" # Do not correct errors related to helpful documentation strings
+]
+
+# fixable = ["ALL"]  # Auto-correct all errors when starting ruf with --fix flag (Be carefull to switch on!!!)
+
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"  # A regexp to skip dummy variables, e.g., ‘_’, ‘__’
+
+
+
+[tool.ruff.format]
+quote-style = "double"  # Use double quotes
+indent-style = "space"  # Indent by spaces
+docstring-code-format = true # Python code auto formatting within documentation strings (docstrings)
+docstring-code-line-length = 80 # Max length docstring line
+line-ending = "auto"  # Automatic line-end detection ("lf" - line ending with "lf", "crlf" - line ending with "crlf")
+skip-magic-trailing-comma = true  # Skip comma at the end of sequencies to avoid "magic" ruff multi-line formatting
+
