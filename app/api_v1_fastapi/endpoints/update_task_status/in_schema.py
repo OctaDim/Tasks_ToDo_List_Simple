@@ -11,9 +11,9 @@ class InUpdateTaskStatus(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def validate_request_body(cls, data: dict | Any) -> Dict[str, Any]:
+    def validate_request_body(cls, data: dict | Any) -> Dict[str, Any] | None:
         req_body_dict = ensure_req_body_dict(data)
-        if "status" not in req_body_dict:
+        if req_body_dict and "status" not in req_body_dict:
             error_log = f"Missing parameter 'status' error: {req_body_dict}"
             raise ValueError(error_log)
         return req_body_dict
