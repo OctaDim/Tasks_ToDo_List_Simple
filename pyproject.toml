@@ -57,3 +57,9 @@ docstring-code-line-length = 80 # Max length docstring line
 line-ending = "auto"  # Automatic line-end detection ("lf" - line ending with "lf", "crlf" - line ending with "crlf")
 skip-magic-trailing-comma = true  # Skip comma at the end of sequencies to avoid "magic" ruff multi-line formatting
 
+
+
+[tool.mypy]
+python_version = "3.11"
+disallow_untyped_defs = true
+warn_unused_ignores = true
