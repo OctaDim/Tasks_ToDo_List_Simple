@@ -1,7 +1,13 @@
+import sys
 from collections.abc import AsyncGenerator
 from datetime import UTC, datetime
+from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, Dict, List
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
 import pytest
 import pytest_asyncio
@@ -9,7 +15,7 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy.exc import IntegrityError
 
 from app.db_postgres.session import get_async_session
-from app.main import app
+from app.app_main import app
 from app.models_sqlalchemy.task_model import TaskStatusEnum
 
 

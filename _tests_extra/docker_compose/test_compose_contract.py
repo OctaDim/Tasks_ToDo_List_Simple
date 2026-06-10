@@ -65,6 +65,7 @@ def test_dockerfile_uses_api_host_and_port_environment_defaults() -> None:
         encoding="utf-8"
     )
 
+    assert "uvicorn main:app" in dockerfile_text
     assert "API_HOST:-0.0.0.0" in dockerfile_text
     assert "API_PORT:-8000" in dockerfile_text
     assert "alembic -c alembic/alembic.ini upgrade head" in dockerfile_text
@@ -93,5 +94,15 @@ def test_root_compose_is_renderable() -> None:
         text=True,
         check=False,
     )
+
+    combined_output = f"{result.stdout}\n{result.stderr}"
+    if (
+        "could not be found in this WSL 2 distro" in combined_output
+        or "activate the WSL integration in Docker Desktop settings" in combined_output
+    ):
+        pytest.skip(
+            "Docker CLI stub is present, but Docker Desktop WSL integration is "
+            "not available in the current runtime."
+        )
 
     assert result.returncode == 0, result.stderr

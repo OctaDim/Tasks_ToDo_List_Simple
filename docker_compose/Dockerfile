@@ -10,4 +10,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["sh", "-c", "alembic -c alembic/alembic.ini upgrade head && exec uvicorn app.main:app --host \"${API_HOST:-0.0.0.0}\" --port \"${API_PORT:-8000}\""]
+CMD ["sh", "-c", "alembic -c alembic/alembic.ini upgrade head && exec uvicorn main:app --host \"${API_HOST:-0.0.0.0}\" --port \"${API_PORT:-8000}\""]

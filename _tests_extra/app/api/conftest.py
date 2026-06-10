@@ -8,8 +8,8 @@ import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.exc import IntegrityError
 
+from app.app_main import app
 from app.db_postgres.session import get_async_session
-from app.main import app
 from app.models_sqlalchemy.task_model import TaskStatusEnum
 
 
