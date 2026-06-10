@@ -1,3 +1,6 @@
+# ############################
+# ####### RUFF CONFIGS #######
+# ############################
 [tool.ruff]
 target-version = "py311"  # Minimum supported Python version
 line-length = 88  # Max line length
@@ -36,6 +39,7 @@ ignore = [# Rules to ignore
     "COM812", # Ignore extra trailing comma
     "UP006", # Ignore Dict typing annotation instead of dict annotation for back compatibility
     "UP035", # Ignore List typing annotation instead of list annotation for back compatibility
+    "I001", "E402", # Imports sorting and formatting
 ]
 
 unfixable = [
@@ -57,9 +61,20 @@ docstring-code-line-length = 80 # Max length docstring line
 line-ending = "auto"  # Automatic line-end detection ("lf" - line ending with "lf", "crlf" - line ending with "crlf")
 skip-magic-trailing-comma = true  # Skip comma at the end of sequencies to avoid "magic" ruff multi-line formatting
 
+[tool.ruff.lint.per-file-ignores]
+"app/models_sqlalchemy/*.py" = ["F821"]
 
-
+# ############################
+# ####### MYPY CONFIGS #######
+# ############################
 [tool.mypy]
 python_version = "3.11"
+pretty = true
+show_error_codes = true
 disallow_untyped_defs = true
 warn_unused_ignores = true
+warn_return_any = true
+warn_unused_configs = true
+warn_no_return = true
+warn_redundant_casts = true
+check_untyped_defs = true
