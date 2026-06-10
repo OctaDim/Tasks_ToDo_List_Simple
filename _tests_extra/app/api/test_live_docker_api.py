@@ -1,11 +1,29 @@
 from __future__ import annotations
 
+import errno
 import os
+import socket
 import time
 
 import httpx
+import pytest
 
 BASE_URL = os.getenv("LIVE_API_BASE_URL", "http://127.0.0.1:8000")
+
+
+def _skip_when_loopback_tcp_is_blocked() -> None:
+    host = "127.0.0.1"
+    port = 8000
+
+    try:
+        with socket.create_connection((host, port), timeout=1.0):
+            return
+    except OSError as exc:
+        if exc.errno in {errno.EPERM, errno.EACCES}:
+            pytest.skip(
+                "Live API smoke test requires loopback TCP access, but the "
+                "current runtime blocks connections to 127.0.0.1:8000."
+            )
 
 
 def _request(
@@ -23,6 +41,8 @@ def _request(
 
 
 def test_live_docker_api_end_to_end() -> None:
+    _skip_when_loopback_tcp_is_blocked()
+
     unique_suffix = str(time.time_ns())
     statuses_plan = ("new", "in_progress", "done")
     expected_paths = {

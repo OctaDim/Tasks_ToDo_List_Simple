@@ -183,7 +183,7 @@ async def test_basic_filter_tasks_by_status_cases(
     [
         ("created", {"status": "in_progress"}, 200, None, None),
         ("created", {"status": "unknown"}, 422, "status", None),
-        ("created", {}, 422, "request", "status"),
+        ("created", {}, 422, "status", "Field required"),
         ("created", {"status": ""}, 422, "status", None),
         ("missing", {"status": "done"}, 404, None, None),
     ],
