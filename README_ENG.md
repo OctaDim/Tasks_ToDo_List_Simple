@@ -5,13 +5,14 @@ FastAPI backend service for user and task management. The project implements the
 ## Architecture Summary
 
 - `app/app_main.py` creates the FastAPI application and registers exception handlers.
+- `main.py` is the root ASGI compatibility entrypoint and re-exports `app` from `app/app_main.py`.
 - `app/api_v1_fastapi/endpoints/` keeps one directory per endpoint with `router.py`, `in_schema.py`, and `out_schema.py`.
 - `app/repositories_utils/` contains persistence functions used by the routers.
 - `app/models_sqlalchemy/` defines SQLAlchemy models for `users` and `tasks`.
 - `app/db_postgres/` contains the async SQLAlchemy engine and session dependency.
 - `alembic/` stores database migration configuration and revisions.
 - `_tests_basic/` contains the isolated basic API checks.
-- `_tests_extra/` contains the extended API, config, repository, DB, and Docker contract tests.
+- `_tests_extra/` contains the extended API, config, repository, DB, and Docker tests.
 
 ## API - SERVICES - REPOSITORIES
 
@@ -52,7 +53,20 @@ Why this split exists:
 - PostgreSQL
 - Alembic
 - Pytest
+- Ruff
+- Mypy
+- Docker
 - Docker Compose
+
+ ## Recommendations:
+- Add a “password” field to the user entity to prevent the leakage of sensitive confidential data from one user to another and to differentiate access levels.
+- Be sure to store passwords in hashed form to prevent password leaks at the administration level.
+- Pass the password and email to each router via a dependency and verify them at the service or middleware level.
+- Add an “active” field to all entities and use soft deletion (retaining records in the database) rather than hard deletion.
+- Create a script or additional background task that will physically delete records marked as inactive after a specified period.
+- Add an admin panel for quick access to database information at the administration level.
+- Under heavy load, ensure caching of responses returned from the API.  
+
 
 ## Environment Variables
 
@@ -105,7 +119,7 @@ Adjust `docker_compose/.env.postgres` and `docker_compose/.env.api_uvicorn` if y
 
 IMPORTANT NOTE:
 - the container log may print `Uvicorn running on http://0.0.0.0:8000`. It is normal;
-- `http://0.0.0.0:8000` is the internal bind address inside the container, not the browser URL;
+- `http://0.0.0.0:8000` is the internal bind address inside the container, not external one and not the browser URL;
 - open `http://127.0.0.1:8000`, `http://127.0.0.1:8000/docs`, or `http://127.0.0.1:8000/openapi.json` from the host browser.
 
 What happens:
@@ -119,40 +133,146 @@ What happens:
 - Uvicorn starts with `API_HOST` and `API_PORT` from `docker_compose/.env.api_uvicorn`.
 - The default `API_HOST=0.0.0.0` is intentional so the service is reachable from the host browser when running in Docker/WSL, while `API_PUBLISH_HOST=127.0.0.1` preserves the external localhost URL.
 
-Default URLs with the committed env files:
+Default URLs:
 
 - API base URL: `http://127.0.0.1:8000`
 - Swagger UI: `http://127.0.0.1:8000/docs`
+- ReDoc UI: `http://127.0.0.1:8000/redoc`
 - OpenAPI JSON: `http://127.0.0.1:8000/openapi.json`
 
-### Option 2. Local Python run
+### Option 2. Recommended local shortcuts via `make` command
 
-1. Create and activate a virtual environment.
-2. Install dependencies:
+The repository provides a curated `Makefile` so you do not need to remember the full Docker Compose, Uvicorn, Alembic, or quality-check commands.
 
-```bash
-python -m venv .venv
-. .venv/bin/activate
-pip install -r requirements.txt
-```
-
-3. Export database settings and apply migrations:
+Helpful discovery command:
 
 ```bash
-set -a
-. ./docker_compose/.env.postgres
-set +a
-alembic -c alembic/alembic.ini upgrade head
+make help
 ```
 
-4. Start the API:
+Main startup commands:
 
 ```bash
-set -a
-. ./docker_compose/.env.api_uvicorn
-set +a
-uvicorn app.main:app --host "${API_HOST:-0.0.0.0}" --port "${API_PORT:-8000}"
+make docker-up-d
+make docker-up
+make local-python
 ```
+
+What each command does:
+
+- `make docker-up-d` recommended way: starts the Docker stack in detached mode and prints the main API URLs.
+- `make docker-up` possible way: starts the Docker stack in the foreground and streams logs.
+- `make local-python` long way: loads both env files literally, starts the Compose `db` service if needed, waits for 
+  PostgreSQL readiness, runs Alembic migrations, and then starts Uvicorn through the repository `PYTHON` interpreter.
+
+Backward-compatible aliases are still available:
+
+```bash
+make up-d
+make up
+```
+
+Useful runtime helpers:
+
+```bash
+make ps
+make docker-logs
+make api-logs
+make db-logs
+make down
+make restart
+make urls
+make swagger
+make redoc
+make json
+make openapi-status
+```
+
+## How To Work With `make`
+
+Make help:
+
+```bash
+make help
+```
+
+Startup and shutdown:
+
+```bash
+make docker-up-d
+make docker-up
+make local-python
+make restart
+make down
+make ps
+```
+
+API access helpers:
+
+```bash
+make urls
+make swagger
+make redoc
+make json
+make openapi-status
+```
+
+Testing and quality helpers:
+
+```bash
+make test
+make test-basic
+make test-extra
+make test-compose
+make test-local
+make test-local-basic
+make test-local-extra
+make ruff
+make ruff-fix
+make ruff-format-check
+make ruff-format-fix
+make mypy
+make global-check
+```
+
+## How To Run Ruff
+
+Note: The project stores default Ruff configuration in `pyproject.toml`; 
+that file provides the default project-wide settings for `ruff` command
+
+Recommended commands:
+
+```bash
+make ruff
+make ruff-format-check
+make ruff-fix
+make ruff-format-fix
+```
+
+Current Ruff coverage includes:
+
+- lint checks such as `pycodestyle`, `pyflakes`, import sorting, selected `pyupgrade`, `bugbear`, naming, and simplification rules;
+- formatting checks through `ruff format`;
+- repository exclusions for `.venv*`, `build`, `dist`, and `_docs`.
+
+## How To Run Mypy
+
+The project stores default Mypy configuration in `pyproject.toml`; 
+that file provides the default project-wide settings for `mypy` command
+
+Recommended command:
+
+```bash
+make mypy
+```
+
+Current Mypy configuration includes:
+
+- `disallow_untyped_defs = true`
+- `check_untyped_defs = true`
+- `warn_return_any = true`
+- `warn_unused_ignores = true`
+- `warn_redundant_casts = true`
 
 ## How To Run Swagger
 
@@ -176,28 +296,6 @@ Brief test logging:
 docker compose exec -T api python -m pytest -q _tests_basic
 ```
 
-
-Run only the basic tests from `_tests_basic`:
-
-```bash
-python -m pytest -q _tests_basic
-```
-
-If this repository uses the local verified virtual environment:
-
-```bash
-.venv3145/bin/python -m pytest -q _tests_basic
-```
-
-Run the basic tests separately from `_tests_extra/app`:
-
-```bash
-python -m pytest -q _tests_basic --ignore=_tests_extra/app
-```
-
-`_tests_basic` is now self-contained and does not depend on `_tests` or `_tests_extra`.
-
-
 ## List of BASIC tests:
 
 ### Create user:
@@ -206,6 +304,8 @@ python -m pytest -q _tests_basic --ignore=_tests_extra/app
 - Create user (missing parameters)
 - Create user (empty parameters)
 - Create user (duplicate email)
+
+### Create task:
 - Create task (valid parameters)
 - Create task (invalid parameters)
 - Create task (missing parameters)
@@ -246,39 +346,13 @@ python -m pytest -q _tests_basic --ignore=_tests_extra/app
 - Get statistics (empty parameters)
 - Get statistics (nonexistent user)
 
-## How To Run EXTRA Tests (How to run BASIC tests see the section above)
+## How To Run EXTRA Tests 
+(See the section above if you want to run the BASIC tests)
 
 Recommended Docker-native runs after `docker compose --env-file docker_compose/.env.postgres --env-file docker_compose/.env.api_uvicorn up --build`:
 
 ```bash
-docker compose exec -T api python -m pytest -q
-docker compose exec -T api python -m pytest -q _tests_extra/app/api/test_live_docker_api.py
-docker compose exec -T api python -m pytest -q _tests_extra/app/api
-docker compose exec -T api python -m pytest -q _tests_extra/docker_compose
-```
-
-Run the full test suite from the repository root:
-
-```bash
-python -m pytest -q
-```
-
-If this repository uses the local verified virtual environment:
-
-```bash
-.venv3145/bin/python -m pytest -q
-```
-
-Run only API tests:
-
-```bash
-python -m pytest -q _tests_extra/app/api
-```
-
-Run Docker/Compose contract checks:
-
-```bash
-python -m pytest -q _tests_extra/docker_compose
+docker compose exec -T api python -m pytest -q -vv _tests_extra
 ```
 
 ## API Endpoints
