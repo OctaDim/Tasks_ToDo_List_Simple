@@ -106,6 +106,14 @@ Compose note:
 
 ## How To Run The Project
 
+### Important!
+
+Don't forget to copy the environment .env.* files to the ‘docker_compose’ directory:
+
+docker_compose/.env.api_uvicorn
+
+docker_compose/.env.postgres
+
 ### Option 1. Recommended: Docker Compose
 
 1. Start the TO-DO TASKS backend service:

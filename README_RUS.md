@@ -103,7 +103,18 @@
 | `API_HOST` | No | `0.0.0.0` | Хост привязки, который Uvicorn использует внутри Docker runtime |
 | `API_PORT` | No | `8000` | Порт, который Uvicorn использует внутри Docker runtime |
 
+
 ## Как запустить проект
+
+## копирование фалов переменных окружения
+
+### Внимание!
+
+Не забудьте скопировать .env.* файлы переменного окружения в директорию 'docker_compose':
+
+docker_compose/.env.api_uvicorn
+
+docker_compose/.env.postgres
 
 ### Вариант 1. Рекомендуется: Docker Compose
 
